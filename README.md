@@ -1,1 +1,1 @@
-# xycar_ws
+# 2025_Kookmin_Autonomous-Driving-Competition
