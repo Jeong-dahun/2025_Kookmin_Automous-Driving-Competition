@@ -91,4 +91,53 @@ else:
     steer toward center of widest gap
 ```
 
-### 4. OBJECT DRIVE (Obstacle Avoidance)
+### 🚗💨 OBJECT DRIVE (Obstacle Avoidance)
+
+This mode enables **dynamic lane changing and obstacle avoidance** when a slower vehicle is detected in front, and faster vehicles are occupying adjacent lanes.
+
+#### ✅ Task Overview
+- The ego vehicle detects a slow-moving car in its lane.
+- Neighboring lanes also contain vehicles, but they are moving faster and will eventually stop.
+- The ego vehicle must opportunistically change lanes **before the front vehicle stops**, pass it, and return to the original lane.
+- This is a **time-sensitive overtaking task** that must be executed safely using LiDAR-based logic and simple staged control.
+
+#### 🧠 Implementation Summary
+The `OBJECT_DRIVE` mode is structured into **4 stages**, managed by a state machine:
+
+| Stage | Description |
+|-------|-------------|
+| **0** | Wait until front vehicle is close (based on LiDAR percentile distance) |
+| **1** | Fixed steering angle for ~2.5 seconds to perform initial lane change |
+| **2** | Follow the new lane using PID lane tracking |
+| **3** | Once another vehicle is detected again in new lane, steer back to original lane |
+
+#### ⚙️ Key Logic
+- **Trigger condition**: `front < 10.0` (LiDAR-based) while in `LANE_DRIVE`
+- **Transition to OBJECT_DRIVE**: Sets `overtake_stage = 0`
+- **Steering**: Fixed values during lane shift (e.g., -20° to left, then +20° to return)
+- **Speed**: Dynamically adjusted depending on steering angle
+- **Safety buffer**: 0.5s delay before allowing re-entry (to avoid oscillation)
+
+#### 📌 Code Highlights
+```python
+if self.overtake_stage == 0 and front < TH:
+    self.overtake_stage = 1
+    self.overtake_start_time = now
+
+elif self.overtake_stage == 1:
+    if elapsed < 2.5:
+        self.drive(-20, 40)  # Initial lane change
+    else:
+        self.overtake_stage = 2
+
+elif self.overtake_stage == 2:
+    # PID lane following in new lane
+    if front < 11.0:
+        self.overtake_stage = 3
+
+elif self.overtake_stage == 3:
+    if elapsed < 2.5:
+        self.drive(+20, 35)  # Return to original lane
+    else:
+        drive_mode = LANE_DRIVE
+```
