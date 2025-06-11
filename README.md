@@ -2,7 +2,7 @@
 ![슬라이드2](https://github.com/user-attachments/assets/a6fda189-8e58-4c75-a03b-dbaf816cc113)
 
 ## 📁 Repository Structure 
-<pre> ```bash 2025_Kookmin_Automous-Driving-Competition/ 
+<pre> 2025_Kookmin_Automous-Driving-Competition/ 
   └── src/ 
         └── kookmin/ 
                 └── driver/ 
@@ -14,6 +14,6 @@
                 ├── lidar_viewer.py  
                 ├── track_drive.py  
                 ├── traffic.py  
-                └── ultra.py  ``` </pre>
+                └── ultra.py  </pre>
 
 
