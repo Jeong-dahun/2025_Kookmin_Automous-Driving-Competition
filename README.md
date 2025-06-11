@@ -38,7 +38,25 @@ This module detects a traffic light and initiates vehicle start only when the ri
 
 
 
-### 2. Lane Drive
+### 🛣️  Lane Drive
+
+This module detects left and right lane lines from a monocular camera image and calculates their intersection points to derive a midpoint for steering control.
+
+#### ✅ Key Features
+- Defines a fixed **Region of Interest (ROI)** to focus on the road.
+- Applies standard image preprocessing:
+  - Grayscale conversion  
+  - Gaussian blur  
+  - Canny edge detection
+- Uses a trapezoidal mask to isolate lane-relevant area.
+- Applies **Hough Line Transform** to extract line segments.
+- Filters out horizontal lines by slope thresholding.
+- Separates line segments into **left and right lanes** based on slope and position.
+- Fits representative lines to each side using slope-intercept averaging.
+- Calculates:
+  - Left and right lane positions at a reference row
+  - Midpoint between lanes
+  - Offset from the image center for steering control
 
 ### 3. SENSOR DRIVE (Cone Driving)
 
