@@ -90,5 +90,4 @@ elif right side only free:
 else:
     steer toward center of widest gap
 
-
-
+### 4. OBJECT DRIVE (Obstacle Avoidance)
