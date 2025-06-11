@@ -58,6 +58,36 @@ This module detects left and right lane lines from a monocular camera image and 
   - Midpoint between lanes
   - Offset from the image center for steering control
 
-### 3. SENSOR DRIVE (Cone Driving)
+### 🟠 SENSOR DRIVE (Cone Driving)
+
+This mode enables autonomous driving through cones using LiDAR data only.
+
+#### ✅ Key Features
+- Activated when cones are detected ahead (based on front LiDAR distance < 5m).
+- Uses **median filtering** to reduce LiDAR noise.
+- Focuses on **left (210°–355°)** and **right (5°–150°)** angular sectors.
+- Implements a **gap-finding algorithm**:
+  - Detects contiguous "free space" areas larger than 2.5m.
+  - Selects the widest gap and calculates its midpoint bearing.
+  - Converts the bearing to a steering angle.
+- Applies different PID gains depending on whether free space is detected on both sides or only one.
+- Returns a clipped steering angle between **-75° and +75°**.
+
+#### 🔁 Driving Flow
+1. Monitor front LiDAR distance.
+2. When cones are detected:
+   - `lidar_drive()` → `steer_through_cones()` is executed.
+   - Vehicle adjusts angle and slows down to speed = 8.
+3. Continues counting successful frames (`cone_clear_count`).
+4. After 420 frames (~42 seconds), mode switches back to lane driving (`LANE_DRIVE`).
+
+#### 📌 Steering Logic (Simplified)
+```python
+if left side only free:
+    steer toward left gap
+elif right side only free:
+    steer toward right gap
+else:
+    steer toward center of widest gap
 
 ### 4. OBJECT DRIVE (Obstacle Avoidance)
